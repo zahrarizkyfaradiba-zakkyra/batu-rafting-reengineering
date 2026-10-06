@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Form pemesanan paket wisata Batu Rafting dengan pilihan tanggal, slot waktu, dan jumlah peserta.">
+    <title>Form Pemesanan - Batu Rafting</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+    <style>
+        .booking-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        
+        /* Container Tombol Aksi */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-submit { 
+            flex: 2; 
+            background: #2563eb; 
+            color: #fff; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 5px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            text-align: center;
+        }
+        .btn-submit:hover { background: #1d4ed8; }
+        
+        /* Tombol Kembali / Batal */
+        .btn-back {
+            flex: 1;
+            background: #f1f5f9;
+            color: #475569;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+        .btn-back:hover { background: #e2e8f0; }
+    
+        .success-box { text-align:center; }
+        .success-box .code { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; color:#2563eb; background:#eff6ff; padding:12px; border-radius:8px; margin:12px 0; }
+        .success-box table { width:100%; text-align:left; margin:15px 0; border-collapse: collapse; }
+        .success-box td { padding:6px 4px; border-bottom:1px solid #e2e8f0; }
+        .btn-wa { background:#16a34a; color:#fff; padding:12px; border-radius:5px; font-weight:bold; text-decoration:none; display:block; margin-top:10px; }
+        .form-error { color:#b91c1c; background:#fef2f2; border:1px solid #fecaca; padding:10px; border-radius:6px; margin-bottom:12px; display:none; }
+        .hint { font-size:.85rem; color:#64748b; margin-top:4px; }
+    </style>
+</head>
+<body>
+
+<div class="booking-container">
+    <div id="form-view">
+    <h2>Form Pemesanan Batu Rafting</h2>
+    <div id="form-error" class="form-error"></div>
+
+    <form id="booking-form" novalidate>
+        <div class="form-group">
+            <label for="package-select">Paket Wisata</label>
+            <select id="package-select" required>
+                <option value="">Memuat paket...</option>
+            </select>
+            <div class="hint" id="package-hint"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="customer-name">Nama Lengkap</label>
+            <input type="text" id="customer-name" required maxlength="100" placeholder="Masukkan nama Anda" />
+        </div>
+
+        <div class="form-group">
+            <label for="customer-phone">Nomor WhatsApp</label>
+            <input type="tel" id="customer-phone" required placeholder="081234567890" />
+        </div>
+
+        <div class="form-group">
+            <label for="booking-date">Tanggal Wisata</label>
+            <input type="date" id="booking-date" required />
+        </div>
+
+        <div class="form-group">
+            <label for="time-slot">Pilih Jam / Slot</label>
+            <select id="time-slot" required disabled>
+                <option value="">-- Pilih Tanggal Terlebih Dahulu --</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="total-pax">Jumlah Peserta (Pax)</label>
+            <input type="number" id="total-pax" min="1" step="1" value="1" required />
+        </div>
+
+        <div class="form-group">
+            <label for="payment-type">Metode Pembayaran</label>
+            <select id="payment-type" required>
+                <option value="TRANSFER">Transfer Bank</option>
+                <option value="ONSITE">Bayar di Lokasi</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <h3>Estimasi Total: <span id="display-total" style="color: #2563eb;">Rp 0</span></h3>
+            <div class="hint">Total akhir dihitung ulang oleh server saat pemesanan dikirim.</div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" id="btn-submit" class="btn-submit">Konfirmasi Pemesanan</button>
+            <a href="paket.html" class="btn-back">&larr; Pilih Paket Lain</a>
+        </div>
+    </form>
+    </div>
+
+    <div id="success-view" class="success-box" style="display:none;">
+        <h2>Pemesanan Berhasil!</h2>
+        <p>Simpan kode booking Anda:</p>
+        <div class="code" id="success-code"></div>
+        <table id="success-detail"></table>
+        <a id="wa-link" class="btn-wa" target="_blank" rel="noopener">Konfirmasi via WhatsApp</a>
+        <a id="status-link" class="btn-back" style="margin-top:10px; display:block;">Cek Status Pemesanan</a>
+        <a href="index.html" class="btn-back" style="margin-top:10px; display:block;">Kembali ke Beranda</a>
+    </div>
+</div>
+
+<script>
+  let packages = [];
+  let currentPkg = null;
+
+  const el = (id) => document.getElementById(id);
+  const showError = (msg) => { const b = el('form-error'); b.textContent = msg; b.style.display = msg ? 'block' : 'none'; if (msg) b.scrollIntoView({behavior:'smooth', block:'center'}); };
+
+  function selectPackage(id) {
+    currentPkg = packages.find((p) => String(p.id) === String(id)) || null;
+    const pax = el('total-pax');
+    if (currentPkg) {
+      pax.min = currentPkg.min_pax;
+      if (Number(pax.value) < currentPkg.min_pax) pax.value = currentPkg.min_pax;
+      el('package-hint').textContent = 'Minimal ' + currentPkg.min_pax + ' peserta - ' + rupiah(currentPkg.price_per_pax) + ' / orang';
+    } else {
+      el('package-hint').textContent = '';
+    }
+    calculateTotal();
+  }
+
+  function calculateTotal() {
+    const pax = Number(el('total-pax').value) || 0;
+    const price = currentPkg ? Number(currentPkg.price_per_pax) : 0;
+    el('display-total').textContent = rupiah(pax * price);
+  }
+
+  async function loadPackages() {
+    const select = el('package-select');
+    try {
+      const res = await fetch(API_URL + '/packages');
+      const result = await res.json();
+      packages = result.data || [];
+      if (!packages.length) { select.innerHTML = '<option value="">Belum ada paket tersedia</option>'; return; }
+
+      const params = new URLSearchParams(location.search);
+      const wantedId = params.get('id');
+      const wantedName = (params.get('package') || '').toLowerCase(); // dukung tautan lama
+
+      select.innerHTML = '<option value="">-- Pilih Paket --</option>' + packages.map((p) =>
+        '<option value="' + esc(p.id) + '">' + esc(p.name) + '</option>').join('');
+
+      const match = packages.find((p) => String(p.id) === wantedId) || packages.find((p) => p.name.toLowerCase() === wantedName);
+      if (match) select.value = match.id;
+      selectPackage(select.value);
+    } catch (err) {
+      select.innerHTML = '<option value="">Gagal memuat paket</option>';
+      showError('Tidak dapat terhubung ke server. Pastikan backend berjalan.');
+    }
+  }
+
+  async function checkAvailableSlots() {
+    const date = el('booking-date').value;
+    const slotSelect = el('time-slot');
+    if (!date) return;
+
+    slotSelect.disabled = true;
+    slotSelect.innerHTML = '<option value="">Mengecek ketersediaan slot...</option>';
+    try {
+      const res = await fetch(API_URL + '/slots?date=' + encodeURIComponent(date));
+      const result = await res.json();
+      if (!result.success) { slotSelect.innerHTML = '<option value="">' + esc(result.message) + '</option>'; return; }
+
+      let available = 0;
+      slotSelect.innerHTML = result.slots.map((s) => {
+        if (s.is_available) {
+          available++;
+          return '<option value="' + esc(s.time_slot) + '">' + esc(s.time_slot) + ' WIB (sisa kuota: ' + s.remaining_pax + ' orang)</option>';
+        }
+        return '<option value="" disabled>' + esc(s.time_slot) + ' WIB - ' + esc(s.reason || 'Tidak tersedia') + '</option>';
+      }).join('');
+
+      if (available > 0) {
+        slotSelect.disabled = false;
+        slotSelect.insertAdjacentHTML('afterbegin', '<option value="">-- Pilih Slot --</option>');
+        slotSelect.value = '';
+      } else {
+        slotSelect.insertAdjacentHTML('afterbegin', '<option value="">Semua slot penuh pada tanggal ini</option>');
+        slotSelect.value = '';
+      }
+    } catch (err) {
+      slotSelect.innerHTML = '<option value="">Gagal memuat slot</option>';
+    }
+  }
+
+  el('package-select').addEventListener('change', (e) => selectPackage(e.target.value));
+  el('total-pax').addEventListener('input', calculateTotal);
+  el('booking-date').addEventListener('change', checkAvailableSlots);
+  el('booking-date').min = todayWIB();
+
+  el('booking-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showError('');
+
+    if (!currentPkg) return showError('Silakan pilih paket wisata.');
+    const data = {
+      package_id: currentPkg.id,
+      customer_name: el('customer-name').value.trim(),
+      customer_phone: el('customer-phone').value.trim(),
+      booking_date: el('booking-date').value,
+      time_slot: el('time-slot').value,
+      total_pax: Number(el('total-pax').value),
+      payment_type: el('payment-type').value
+    };
+    if (!data.customer_name || !data.customer_phone || !data.booking_date || !data.time_slot || !data.total_pax) {
+      return showError('Semua field wajib diisi, termasuk tanggal dan slot waktu.');
+    }
+    if (!Number.isInteger(data.total_pax) || data.total_pax < currentPkg.min_pax) {
+      return showError('Minimal pemesanan paket ini adalah ' + currentPkg.min_pax + ' orang.');
+    }
+
+    const btn = el('btn-submit');
+    btn.disabled = true; btn.textContent = 'Memproses...';
+    try {
+      const res = await fetch(API_URL + '/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      if (!result.success) { showError(result.message || 'Pemesanan gagal.'); checkAvailableSlots(); return; }
+
+      const b = result.data;
+      el('success-code').textContent = b.booking_code;
+      el('success-detail').innerHTML =
+        '<tr><td>Paket</td><td>' + esc(b.package_name) + '</td></tr>' +
+        '<tr><td>Tanggal</td><td>' + esc(b.booking_date) + ' - ' + esc(b.time_slot) + ' WIB</td></tr>' +
+        '<tr><td>Peserta</td><td>' + esc(b.total_pax) + ' orang</td></tr>' +
+        '<tr><td>Total</td><td><strong>' + rupiah(b.total_price) + '</strong></td></tr>' +
+        '<tr><td>Status</td><td>Menunggu Konfirmasi</td></tr>';
+      const text = 'Halo BatuRafting, saya sudah memesan dengan kode booking ' + b.booking_code + ' a.n. ' + data.customer_name + '.';
+      el('wa-link').href = 'https://wa.me/6285234613677?text=' + encodeURIComponent(text);
+      el('status-link').href = 'cek-status.html?code=' + encodeURIComponent(b.booking_code);
+      el('form-view').style.display = 'none';
+      el('success-view').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      showError('Terjadi kesalahan koneksi ke server.');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Konfirmasi Pemesanan';
+    }
+  });
+
+  loadPackages();
+</script>
+
+</body>
+</html>

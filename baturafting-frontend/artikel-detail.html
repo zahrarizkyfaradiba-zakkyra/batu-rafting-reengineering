@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Baca artikel dan panduan wisata outdoor dari Batu Rafting.">
+    <title>Artikel - BatuRafting</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            <img src="assets/logo.png" alt="BatuRafting Logo">
+        </a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Beranda</a></li>
+                <li><a href="tentang.html">Tentang Kami</a></li>
+                <li><a href="layanan.html">Layanan</a></li>
+                <li><a href="paket.html">Paket Harga</a></li>
+                <li><a href="galeri.html">Galeri</a></li>
+                <li><a href="artikel.html" style="color:#2563eb; font-weight:700;">Artikel</a></li>
+                <li><a href="cek-status.html">Cek Pesanan</a></li>
+                <li><a href="kontak.html">Kontak</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20reservasi" target="_blank" class="btn btn-blue-pill">Pesan Sekarang</a>
+    </header>
+
+    <main class="container" style="max-width:760px; margin:40px auto;">
+        <a href="artikel.html" style="color:#2563eb; text-decoration:none; font-weight:600;">&larr; Semua Artikel</a>
+        <article id="article" style="margin-top:20px;"><p>Memuat artikel...</p></article>
+    </main>
+
+    <script>
+        (async function () {
+            const box = document.getElementById('article');
+            const slug = new URLSearchParams(location.search).get('slug');
+            if (!slug) { box.innerHTML = '<p>Artikel tidak ditemukan.</p>'; return; }
+            try {
+                const res = await fetch(API_URL + '/articles/' + encodeURIComponent(slug));
+                const result = await res.json();
+                if (!result.success) { box.innerHTML = '<p>' + esc(result.message) + '</p>'; return; }
+                const a = result.data;
+                document.title = a.title + ' - BatuRafting';
+                const date = a.published_at ? new Date(a.published_at).toLocaleDateString('id-ID', { dateStyle: 'long' }) : '';
+                box.innerHTML =
+                    (a.category ? '<small style="color:#2563eb; font-weight:600; text-transform:uppercase;">' + esc(a.category) + '</small>' : '') +
+                    '<h1 style="margin:8px 0;">' + esc(a.title) + '</h1>' +
+                    '<p style="color:#64748b;">' + esc(date) + '</p>' +
+                    (a.image_url ? '<img src="' + esc(a.image_url) + '" alt="' + esc(a.title) + '" style="width:100%; border-radius:12px; margin:15px 0;">' : '') +
+                    '<div style="white-space:pre-wrap; line-height:1.8; color:#334155;">' + esc(a.content) + '</div>';
+            } catch (err) {
+                box.innerHTML = '<p>Tidak dapat terhubung ke server.</p>';
+            }
+        })();
+    </script>
+</body>
+</html>

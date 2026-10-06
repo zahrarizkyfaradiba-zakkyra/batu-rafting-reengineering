@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cek status pemesanan Batu Rafting dengan kode booking.">
+    <title>Cek Status Pemesanan - BatuRafting</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            <img src="assets/logo.png" alt="BatuRafting Logo">
+        </a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Beranda</a></li>
+                <li><a href="tentang.html">Tentang Kami</a></li>
+                <li><a href="layanan.html">Layanan</a></li>
+                <li><a href="paket.html">Paket Harga</a></li>
+                <li><a href="galeri.html">Galeri</a></li>
+                <li><a href="artikel.html">Artikel</a></li>
+                <li><a href="cek-status.html" style="color:#2563eb; font-weight:700;">Cek Pesanan</a></li>
+                <li><a href="kontak.html">Kontak</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20reservasi" target="_blank" class="btn btn-blue-pill">Pesan Sekarang</a>
+    </header>
+
+    <main class="container" style="max-width:640px; margin:40px auto;">
+        <div class="section-title">
+            <small>PEMESANAN</small>
+            <h2>Cek Status Pemesanan</h2>
+            <p>Masukkan kode booking yang Anda terima saat memesan.</p>
+        </div>
+
+        <form id="status-form" style="display:flex; gap:10px; margin:20px 0;">
+            <input id="code-input" type="text" placeholder="Contoh: BR-20261001-1234" required
+                   style="flex:1; padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
+            <button type="submit" class="btn btn-primary">Cek</button>
+        </form>
+
+        <div id="result"></div>
+    </main>
+
+    <script>
+        const box = document.getElementById('result');
+        const LABEL = {
+            PENDING: ['Menunggu Konfirmasi', '#b45309', '#fef3c7'],
+            PAID: ['Lunas', '#15803d', '#dcfce7'],
+            CANCELLED: ['Dibatalkan', '#b91c1c', '#fee2e2']
+        };
+
+        async function checkStatus(code) {
+            box.innerHTML = '<p>Memeriksa...</p>';
+            try {
+                const res = await fetch(API_URL + '/bookings/' + encodeURIComponent(code.trim()));
+                const result = await res.json();
+                if (!result.success) {
+                    box.innerHTML = '<p style="color:#b91c1c;">' + esc(result.message) + '</p>';
+                    return;
+                }
+                const b = result.data;
+                const st = LABEL[b.payment_status] || [b.payment_status, '#334155', '#e2e8f0'];
+                box.innerHTML =
+                    '<div style="background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:20px;">' +
+                    '<div style="font-weight:800; font-size:1.3rem; color:#2563eb;">' + esc(b.booking_code) + '</div>' +
+                    '<span style="display:inline-block; margin:10px 0; padding:4px 12px; border-radius:999px; font-weight:700; color:' + st[1] + '; background:' + st[2] + ';">' + esc(st[0]) + '</span>' +
+                    '<table style="width:100%; border-collapse:collapse;">' +
+                    row('Pemesan', b.customer_name) + row('Paket', b.package_name) +
+                    row('Tanggal', b.booking_date + ' - ' + b.time_slot + ' WIB') +
+                    row('Peserta', b.total_pax + ' orang') + row('Total', rupiah(b.total_price)) +
+                    row('Pembayaran', b.payment_type === 'ONSITE' ? 'Bayar di Lokasi' : 'Transfer Bank') +
+                    '</table></div>';
+            } catch (err) {
+                box.innerHTML = '<p style="color:#b91c1c;">Tidak dapat terhubung ke server.</p>';
+            }
+        }
+        function row(k, v) {
+            return '<tr><td style="padding:6px 0; color:#64748b; width:35%;">' + esc(k) + '</td><td style="padding:6px 0;">' + esc(v) + '</td></tr>';
+        }
+
+        document.getElementById('status-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            checkStatus(document.getElementById('code-input').value);
+        });
+        const presetCode = new URLSearchParams(location.search).get('code');
+        if (presetCode) { document.getElementById('code-input').value = presetCode; checkStatus(presetCode); }
+    </script>
+
+    <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20tanya%20informasi" target="_blank" class="wa-floating">
+        🟢 Dapatkan Penawaran
+    </a>
+</body>
+</html>

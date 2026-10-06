@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard admin Batu Rafting.">
+    <title>Dashboard Admin - Batu Rafting</title>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="config.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f6f9; }
+        .admin-container { display: flex; min-height: 100vh; }
+        .sidebar { width: 240px; background-color: #1e293b; color: #fff; padding: 20px; }
+        .sidebar h2 { font-size: 20px; border-bottom: 1px solid #334155; padding-bottom: 15px; margin-top: 0; }
+        .sidebar ul { list-style: none; padding: 0; margin-top: 20px; }
+        .sidebar li { margin-bottom: 15px; }
+        .sidebar a { color: #94a3b8; text-decoration: none; font-weight: 500; display: block; padding: 10px; border-radius: 6px; }
+        .sidebar a.active, .sidebar a:hover { background-color: #2563eb; color: #fff; }
+        
+        .main-content { flex: 1; padding: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .stat-card h3 { margin: 0; font-size: 14px; color: #64748b; }
+        .stat-card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: #0f172a; }
+        
+        .section-card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .section-card h3 { margin-top: 0; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table th, table td { text-align: left; padding: 12px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        table th { background-color: #f8fafc; color: #475569; }
+        
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge-pending { background-color: #fef3c7; color: #d97706; }
+        .badge-paid { background-color: #d1fae5; color: #059669; }
+        .badge-cancelled { background-color: #fee2e2; color: #dc2626; }
+
+        .btn-action { padding: 6px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; margin-right: 4px; }
+        .btn-confirm { background-color: #10b981; color: white; }
+        .btn-wa { background-color: #25d366; color: white; text-decoration: none; display: inline-block; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #334155; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; }
+        .btn-submit { background-color: #2563eb; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-submit:hover { background-color: #1d4ed8; }
+    </style>
+
+    <style>
+        .badge-cancelled { background:#fee2e2; color:#b91c1c; }
+        #login-overlay { position:fixed; inset:0; background:#0f172a; display:flex; align-items:center; justify-content:center; z-index:9999; }
+        #login-box { background:#fff; padding:30px; border-radius:12px; width:320px; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+        #login-box h2 { margin:0 0 18px; }
+        #login-box input { width:100%; padding:10px; margin-bottom:12px; border:1px solid #cbd5e1; border-radius:6px; box-sizing:border-box; }
+        #login-box button { width:100%; padding:11px; background:#2563eb; color:#fff; border:0; border-radius:6px; font-weight:700; cursor:pointer; }
+        #login-error { color:#b91c1c; font-size:.9rem; margin-bottom:10px; min-height:1em; }
+        .btn-cancel { background:#dc2626; color:#fff; }
+        .sidebar a.logout { color:#fca5a5; }
+    </style>
+</head>
+<body>
+
+<div id="login-overlay">
+    <form id="login-box">
+        <h2>Login Admin</h2>
+        <div id="login-error"></div>
+        <input type="text" id="login-username" placeholder="Username" autocomplete="username" required>
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" required>
+        <button type="submit">Masuk</button>
+    </form>
+</div>
+
+<div class="admin-container">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <h2>Batu Rafting Admin</h2>
+        <ul>
+            <li><a href="#dashboard" class="active">Dashboard & Statistik</a></li>
+            <li><a href="#kelola-paket">Kelola Paket Wisata</a></li>
+            <li><a href="#override-slot">Manajemen Kuota Slot</a></li>
+            <li><a href="#cms-artikel">CMS Artikel</a></li>
+            <li><a href="#moderasi-ulasan">Moderasi Ulasan</a></li>
+            <li><a href="#" class="logout" id="btn-logout">Keluar</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- 1. STATS RINGKASAN -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Pemesanan</h3>
+                <p id="total-bookings">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Pemasukan</h3>
+                <p id="total-revenue">Rp 0</p>
+            </div>
+        </div>
+
+        <!-- GRAFIK TREN PENGUNJUNG -->
+        <div class="section-card" id="chart-section">
+            <h3>Grafik Tren Pengunjung (Jumlah Pax / Tanggal)</h3>
+            <canvas id="visitorChart" height="90"></canvas>
+        </div>
+
+        <!-- 2. TABEL PEMESANAN TERBARU -->
+        <div class="section-card" id="dashboard">
+            <h3>Daftar Pemesanan Masuk</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kode Booking</th>
+                        <th>Nama Pemesan</th>
+                        <th>No. Telp</th>
+                        <th>Tanggal Wisata</th>
+                        <th>Slot</th>
+                        <th>Pax</th>
+                        <th>Total Harga</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="booking-list">
+                    <tr><td colspan="9" style="text-align:center;">Memuat data pemesanan...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3. OVERRIDE MANUAL KUOTA / SLOT -->
+        <div class="section-card" id="override-slot">
+            <h3>Atur Kuota / Tutup Slot Manual</h3>
+            <form id="form-override">
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Tanggal Wisata</label>
+                        <input type="date" id="slot-date" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Slot Waktu</label>
+                        <select id="slot-time" required>
+                            <option value="08:00">08:00 WIB</option>
+                            <option value="10:00">10:00 WIB</option>
+                            <option value="13:00">13:00 WIB</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Kapasitas Maksimal (Default: 50)</label>
+                        <input type="number" id="slot-capacity" value="50">
+                    </div>
+                    <div style="flex: 1; margin-top: 15px;">
+                        <label><input type="checkbox" id="slot-full"> Tutup Slot Manual (Full Booking)</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">Simpan Perubahan Slot</button>
+            </form>
+        </div>
+
+        <!-- 4. CMS INPUT ARTIKEL BARU -->
+        <div class="section-card" id="cms-artikel">
+            <h3>Tulis Artikel / Berita Baru</h3>
+            <form id="form-article">
+                <div class="form-group">
+                    <label>Judul Artikel</label>
+                    <input type="text" id="article-title" placeholder="Contoh: Tips Rafting Aman Saat Musim Hujan" required>
+                </div>
+                <div class="form-group">
+                    <label>URL Gambar Header (Opsional)</label>
+                    <input type="url" id="article-image" placeholder="https://domain.com/gambar.jpg">
+                </div>
+                <div class="form-group">
+                    <label>Konten Artikel</label>
+                    <textarea id="article-content" rows="6" placeholder="Tulis isi artikel di sini..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Publikasikan Artikel</button>
+            </form>
+
+            <h3 style="margin-top:30px;">Daftar Artikel</h3>
+            <table>
+                <thead><tr><th>Judul</th><th>Slug</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+                <tbody id="article-list"><tr><td colspan="4" style="text-align:center;">Memuat artikel...</td></tr></tbody>
+            </table>
+        </div>
+
+    <!-- 5. MODERASI ULASAN PENGUNJUNG -->
+    <div class="section-card" id="moderasi-ulasan">
+    <h3>Moderasi Ulasan Pengunjung</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Rating</th>
+                <th>Komentar</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="reviews-table-body">
+            <tr><td colspan="6" style="text-align:center;">Memuat data ulasan...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- KELOLA PAKET WISATA -->
+<div class="section-card" id="kelola-paket">
+    <h3>Tambah / Update Paket Wisata</h3>
+    <form id="form-package" style="margin-bottom: 25px;">
+        <input type="hidden" id="package-id">
+        <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 2;">
+                <label>Nama Paket</label>
+                <input type="text" id="pkg-name" placeholder="Contoh: Paket Batu Rafting 12 KM" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Kategori</label>
+                <select id="pkg-category">
+                    <option value="rafting">Rafting</option>
+                    <option value="outbound">Outbound</option>
+                    <option value="paintball">Paintball</option>
+                    <option value="offroad">Offroad</option>
+                </select>
+            </div>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Harga Normal (Rp)</label>
+                <input type="number" id="pkg-price-strike" placeholder="215000">
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Harga Promo (Rp)</label>
+                <input type="number" id="pkg-price" placeholder="200000" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Minimal Peserta (Pax)</label>
+                <input type="number" id="pkg-min-pax" value="4" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Deskripsi & Fasilitas (Pisahkan dengan koma)</label>
+            <textarea id="pkg-features" rows="3" placeholder="Makan Siang Prasmanan, Safety Set, Guide Berpengalaman" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="btn-save-pkg">Simpan Paket</button>
+    </form>
+
+    <h3>Daftar Paket Aktif</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nama Paket</th>
+                <th>Kategori</th>
+                <th>Harga Promo</th>
+                <th>Min. Pax</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="package-list">
+            <tr><td colspan="5" style="text-align:center;">Memuat daftar paket...</td></tr>
+        </tbody>
+    </table>
+</div>
+</div>
+
+<script>
+    const TOKEN_KEY = 'br_admin_token';
+    let token = sessionStorage.getItem(TOKEN_KEY);
+    let visitorChartInstance = null;
+    let bookingsCache = [];
+    let packagesCache = [];
+    let appStarted = false;
+
+    // ---------- Auth ----------
+    function showLogin(msg) {
+        document.getElementById('login-overlay').style.display = 'flex';
+        document.getElementById('login-error').textContent = msg || '';
+    }
+    function logout(expired) {
+        sessionStorage.removeItem(TOKEN_KEY);
+        token = null;
+        showLogin(expired ? 'Sesi berakhir. Silakan login ulang.' : '');
+    }
+    async function authFetch(url, opts) {
+        opts = opts || {};
+        const res = await fetch(url, Object.assign({}, opts, {
+            headers: Object.assign({ 'Content-Type': 'application/json' }, opts.headers || {}, { Authorization: 'Bearer ' + token })
+        }));
+        if (res.status === 401) { logout(true); throw new Error('Sesi berakhir'); }
+        return res.json();
+    }
+
+    document.getElementById('login-box').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const res = await fetch(API_URL + '/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: document.getElementById('login-username').value,
+                    password: document.getElementById('login-password').value
+                })
+            });
+            const result = await res.json();
+            if (!result.success) return showLogin(result.message);
+            token = result.token;
+            sessionStorage.setItem(TOKEN_KEY, token);
+            document.getElementById('login-password').value = '';
+            document.getElementById('login-overlay').style.display = 'none';
+            startApp();
+        } catch (err) {
+            showLogin('Tidak dapat terhubung ke server.');
+        }
+    });
+    document.getElementById('btn-logout').addEventListener('click', (e) => { e.preventDefault(); logout(false); });
+
+    // ---------- Navigasi antar bagian ----------
+    const navLinks = document.querySelectorAll('.sidebar ul a:not(.logout)');
+    const sections = document.querySelectorAll('.section-card');
+
+    function showSection(targetId) {
+        navLinks.forEach((l) => l.classList.toggle('active', l.getAttribute('href') === '#' + targetId));
+        sections.forEach((s) => { s.style.display = 'none'; });
+        const dash = targetId === 'dashboard';
+        document.querySelector('.stats-grid').style.display = dash ? 'grid' : 'none';
+        document.getElementById('chart-section').style.display = dash ? 'block' : 'none';
+        document.getElementById(targetId).style.display = 'block';
+
+        if (targetId === 'dashboard') loadDashboardStats();
+        if (targetId === 'kelola-paket') loadPackages();
+        if (targetId === 'cms-artikel') loadArticles();
+        if (targetId === 'moderasi-ulasan') loadReviews();
+    }
+    navLinks.forEach((link) => link.addEventListener('click', (e) => {
+        e.preventDefault();
+        showSection(link.getAttribute('href').replace('#', ''));
+    }));
+
+    // ---------- Dashboard ----------
+    const STATUS_BADGE = {
+        PAID: '<span class="badge badge-paid">Lunas</span>',
+        PENDING: '<span class="badge badge-pending">Pending</span>',
+        CANCELLED: '<span class="badge badge-cancelled">Dibatalkan</span>'
+    };
+
+    async function loadDashboardStats() {
+        try {
+            const result = await authFetch(API_URL + '/admin/stats');
+            if (!result.success) return alert(result.message);
+
+            document.getElementById('total-bookings').textContent = result.stats.total_bookings;
+            document.getElementById('total-revenue').textContent = rupiah(result.stats.total_revenue);
+            renderChart(result.chart.labels, result.chart.data);
+
+            bookingsCache = result.recent_bookings;
+            const tbody = document.getElementById('booking-list');
+            if (!bookingsCache.length) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Belum ada pemesanan.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = bookingsCache.map((b, i) => {
+                const cleanPhone = String(b.customer_phone).replace(/^0/, '62');
+                const waText = encodeURIComponent(`Halo ${b.customer_name}, terima kasih telah memesan Batu Rafting. Kode Booking: ${b.booking_code}.`);
+                const final = b.payment_status === 'CANCELLED';
+                return '<tr>' +
+                    '<td><strong>' + esc(b.booking_code) + '</strong></td>' +
+                    '<td>' + esc(b.customer_name) + '</td>' +
+                    '<td>' + esc(b.customer_phone) + '</td>' +
+                    '<td>' + esc(b.booking_date) + '</td>' +
+                    '<td>' + esc(b.time_slot) + '</td>' +
+                    '<td>' + esc(b.total_pax) + ' pax</td>' +
+                    '<td>' + rupiah(b.total_price) + '</td>' +
+                    '<td>' + (STATUS_BADGE[b.payment_status] || esc(b.payment_status)) + '</td>' +
+                    '<td>' +
+                        (b.payment_status === 'PENDING' ? '<button class="btn-action btn-confirm" onclick="changeStatus(' + i + ', \'PAID\')">Konfirmasi Lunas</button> ' : '') +
+                        (!final ? '<button class="btn-action btn-cancel" onclick="changeStatus(' + i + ', \'CANCELLED\')">Batalkan</button> ' : '') +
+                        '<a href="https://wa.me/' + encodeURIComponent(cleanPhone) + '?text=' + waText + '" target="_blank" rel="noopener" class="btn-action btn-wa">WA</a>' +
+                    '</td></tr>';
+            }).join('');
+        } catch (err) { console.error('Gagal mengambil data admin:', err); }
+    }
+
+    function renderChart(labels, data) {
+        if (typeof Chart === 'undefined') return;
+        const ctx = document.getElementById('visitorChart').getContext('2d');
+        if (visitorChartInstance) visitorChartInstance.destroy();
+        visitorChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.length ? labels : ['Belum Ada Data'],
+                datasets: [{ label: 'Jumlah Pengunjung (Pax)', data: data.length ? data : [0],
+                    borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)', fill: true, tension: 0.3 }]
+            },
+            options: { responsive: true, scales: { y: { beginAtZero: true } } }
+        });
+    }
+
+    async function changeStatus(index, status) {
+        const b = bookingsCache[index];
+        if (!b) return;
+        const text = status === 'PAID'
+            ? 'Konfirmasi pembayaran untuk ' + b.booking_code + '?'
+            : 'Batalkan pemesanan ' + b.booking_code + '? Kuota slot akan dikembalikan dan tindakan ini tidak dapat diurungkan.';
+        if (!confirm(text)) return;
+        try {
+            const result = await authFetch(API_URL + '/admin/booking-status/' + encodeURIComponent(b.id), {
+                method: 'PATCH', body: JSON.stringify({ payment_status: status })
+            });
+            alert(result.message);
+            loadDashboardStats();
+        } catch (err) { /* sesi berakhir ditangani authFetch */ }
+    }
+
+    // ---------- Kuota slot ----------
+    document.getElementById('form-override').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const result = await authFetch(API_URL + '/admin/override-slot', {
+                method: 'POST',
+                body: JSON.stringify({
+                    slot_date: document.getElementById('slot-date').value,
+                    time_slot: document.getElementById('slot-time').value,
+                    custom_capacity: Number(document.getElementById('slot-capacity').value),
+                    is_manual_full: document.getElementById('slot-full').checked
+                })
+            });
+            alert(result.message);
+        } catch (err) {}
+    });
+
+    // ---------- Paket ----------
+    async function loadPackages() {
+        try {
+            const res = await fetch(API_URL + '/packages');
+            const result = await res.json();
+            packagesCache = result.data || [];
+            const tbody = document.getElementById('package-list');
+            if (!packagesCache.length) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada paket wisata.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = packagesCache.map((p, i) =>
+                '<tr><td><strong>' + esc(p.name) + '</strong></td>' +
+                '<td><span class="badge badge-pending">' + esc(p.category) + '</span></td>' +
+                '<td>' + rupiah(p.price_per_pax) + '</td>' +
+                '<td>' + esc(p.min_pax) + ' pax</td>' +
+                '<td><button class="btn-action btn-confirm" onclick="editPackage(' + i + ')">Edit</button> ' +
+                '<button class="btn-action btn-cancel" onclick="deletePackage(' + i + ')">Hapus</button></td></tr>').join('');
+        } catch (err) { console.error('Gagal memuat paket:', err); }
+    }
+
+    document.getElementById('form-package').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('package-id').value;
+        const payload = {
+            name: document.getElementById('pkg-name').value,
+            category: document.getElementById('pkg-category').value,
+            price_strike: document.getElementById('pkg-price-strike').value,
+            price: document.getElementById('pkg-price').value,
+            min_pax: document.getElementById('pkg-min-pax').value,
+            features: document.getElementById('pkg-features').value
+        };
+        try {
+            const result = await authFetch(API_URL + '/packages' + (id ? '/' + encodeURIComponent(id) : ''), {
+                method: id ? 'PUT' : 'POST', body: JSON.stringify(payload)
+            });
+            alert(result.message);
+            if (result.success) {
+                document.getElementById('form-package').reset();
+                document.getElementById('package-id').value = '';
+                loadPackages();
+            }
+        } catch (err) {}
+    });
+
+    function editPackage(i) {
+        const p = packagesCache[i];
+        if (!p) return;
+        document.getElementById('package-id').value = p.id;
+        document.getElementById('pkg-name').value = p.name;
+        document.getElementById('pkg-category').value = p.category;
+        document.getElementById('pkg-price-strike').value = p.price_strike === null || p.price_strike === undefined ? '' : p.price_strike;
+        document.getElementById('pkg-price').value = p.price_per_pax;
+        document.getElementById('pkg-min-pax').value = p.min_pax;
+        document.getElementById('pkg-features').value = p.features || '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function deletePackage(i) {
+        const p = packagesCache[i];
+        if (!p || !confirm(`Yakin ingin menghapus paket "${p.name}"? Riwayat pemesanan tetap tersimpan.`)) return;
+        try {
+            const result = await authFetch(API_URL + '/packages/' + encodeURIComponent(p.id), { method: 'DELETE' });
+            alert(result.message);
+            loadPackages();
+        } catch (err) {}
+    }
+
+    // ---------- Artikel ----------
+    let articlesCache = [];
+    async function loadArticles() {
+        try {
+            const res = await fetch(API_URL + '/articles');
+            const result = await res.json();
+            articlesCache = result.data || [];
+            const tbody = document.getElementById('article-list');
+            if (!articlesCache.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Belum ada artikel.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = articlesCache.map((a, i) =>
+                '<tr><td>' + esc(a.title) + '</td><td>' + esc(a.slug) + '</td>' +
+                '<td>' + (a.published_at ? new Date(a.published_at).toLocaleDateString('id-ID') : '') + '</td>' +
+                '<td><button class="btn-action btn-cancel" onclick="deleteArticle(' + i + ')">Hapus</button></td></tr>').join('');
+        } catch (err) { console.error('Gagal memuat artikel:', err); }
+    }
+
+    document.getElementById('form-article').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const result = await authFetch(API_URL + '/articles', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: document.getElementById('article-title').value,
+                    image_url: document.getElementById('article-image').value,
+                    content: document.getElementById('article-content').value
+                })
+            });
+            if (result.success) {
+                alert('Artikel berhasil dipublikasikan!');
+                document.getElementById('form-article').reset();
+                loadArticles();
+            } else { alert('Gagal: ' + result.message); }
+        } catch (err) {}
+    });
+
+    async function deleteArticle(i) {
+        const a = articlesCache[i];
+        if (!a || !confirm(`Hapus artikel "${a.title}"?`)) return;
+        try {
+            const result = await authFetch(API_URL + '/articles/' + encodeURIComponent(a.id), { method: 'DELETE' });
+            alert(result.message);
+            loadArticles();
+        } catch (err) {}
+    }
+
+    // ---------- Ulasan ----------
+    let reviewsCache = [];
+    async function loadReviews() {
+        try {
+            const result = await authFetch(API_URL + '/reviews/all');
+            reviewsCache = result.data || [];
+            const tbody = document.getElementById('reviews-table-body');
+            if (!reviewsCache.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Belum ada ulasan masuk.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = reviewsCache.map((r, i) =>
+                '<tr><td><strong>' + esc(r.name) + '</strong></td>' +
+                '<td>&#11088; ' + esc(r.rating) + '</td>' +
+                '<td>' + esc(r.comment) + '</td>' +
+                '<td>' + new Date(r.created_at).toLocaleDateString('id-ID') + '</td>' +
+                '<td>' + (r.is_approved ? '<span class="badge badge-paid">Disetujui</span>' : '<span class="badge badge-pending">Menunggu</span>') + '</td>' +
+                '<td><button class="btn-action btn-confirm" onclick="toggleApproval(' + i + ')">' + (r.is_approved ? 'Batalkan' : 'Setujui') + '</button></td></tr>').join('');
+        } catch (err) { console.error('Gagal memuat ulasan:', err); }
+    }
+
+    async function toggleApproval(i) {
+        const r = reviewsCache[i];
+        if (!r) return;
+        try {
+            const result = await authFetch(API_URL + '/reviews/' + encodeURIComponent(r.id) + '/status', {
+                method: 'PATCH', body: JSON.stringify({ is_approved: !r.is_approved })
+            });
+            alert(result.message);
+            loadReviews();
+        } catch (err) {}
+    }
+
+    // ---------- Mulai ----------
+    function startApp() {
+        showSection('dashboard');
+    }
+    if (token) {
+        document.getElementById('login-overlay').style.display = 'none';
+        startApp();
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Galeri foto kegiatan arung jeram, outbound, dan wisata petualangan Batu Rafting.">
+    <title>Album Galeri - BatuRafting</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <a href="index.html#beranda" class="logo">
+            <img src="assets/logo.png" alt="BatuRafting Logo">
+        </a>
+        <nav>
+    <ul class="nav-links">
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="tentang.html">Tentang Kami</a></li>
+        <li><a href="layanan.html">Layanan</a></li>
+        <li><a href="paket.html">Paket Harga</a></li>
+        <li><a href="galeri.html">Galeri</a></li>
+        <li><a href="artikel.html">Artikel</a></li>
+        <li><a href="cek-status.html">Cek Pesanan</a></li>
+        <li><a href="kontak.html">Kontak</a></li>
+    </ul>
+</nav>
+        <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20reservasi" target="_blank" class="btn btn-blue-pill">Pesan Sekarang</a>
+    </header>
+
+    <main class="container" style="padding-top: 40px;">
+        <div class="section-title">
+            <small>DOKUMENTASI LENGKAP</small>
+            <h2>Album Foto Petualangan BatuRafting</h2>
+            <p>Kumpulan momen seru bersama para pengunjung di berbagai wahana kami.</p>
+        </div>
+
+        <!-- GRID GALERI LENGKAP -->
+        <div class="gallery-grid">
+            <div class="gallery-item" onclick="openLightbox(0)">
+                <img src="https://images.unsplash.com/photo-1530866495561-507c9faab2ed?auto=format&fit=crop&w=600&q=80" alt="Rafting 1">
+                <div class="gallery-overlay"><span>🔍 Rafting Seru</span></div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(1)">
+                <img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=600&q=80" alt="Outbound 1">
+                <div class="gallery-overlay"><span>🔍 Outbound Team</span></div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(2)">
+                <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=600&q=80" alt="Paintball 1">
+                <div class="gallery-overlay"><span>🔍 Paintball War</span></div>
+            </div>
+            <div class="gallery-item" onclick="openLightbox(3)">
+                <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80" alt="Offroad 1">
+                <div class="gallery-overlay"><span>🔍 Offroad 4x4</span></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="btn btn-blue-pill">&larr; Kembali ke Beranda</a>
+        </div>
+    </main>
+
+    <!-- LIGHTBOX MODAL -->
+    <div id="lightboxModal" class="lightbox-modal">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <button class="lightbox-prev" onclick="changeImage(-1)">&#10094;</button>
+        <div class="lightbox-content">
+            <img id="lightboxImg" src="" alt="Galeri BatuRafting">
+            <p id="lightboxCaption" class="lightbox-caption"></p>
+        </div>
+        <button class="lightbox-next" onclick="changeImage(1)">&#10095;</button>
+    </div>
+
+    <!-- FLOATING WA BUTTON -->
+    <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20mendapatkan%20penawaran%20harga" target="_blank" class="wa-floating">
+        🟢 Dapatkan Penawaran
+    </a>
+
+    <script>
+        const galleryImages = [
+            { src: "https://images.unsplash.com/photo-1530866495561-507c9faab2ed?auto=format&fit=crop&w=1200&q=80", title: "Keseruan Pengarungan Rafting 12 KM" },
+            { src: "https://images.unsplash.com/photo-1517649763962-0c623266010b?auto=format&fit=crop&w=1200&q=80", title: "Kegiatan Outbound & Team Building" },
+            { src: "https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=1200&q=80", title: "Simulasi War Games Paintball" },
+            { src: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1200&q=80", title: "Petualangan Fun Offroad Jeep 4x4" }
+        ];
+
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            document.getElementById('lightboxImg').src = galleryImages[currentIndex].src;
+            document.getElementById('lightboxCaption').textContent = galleryImages[currentIndex].title;
+            document.getElementById('lightboxModal').style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxModal').style.display = 'none';
+        }
+
+        function changeImage(direction) {
+            currentIndex += direction;
+            if (currentIndex >= galleryImages.length) currentIndex = 0;
+            if (currentIndex < 0) currentIndex = galleryImages.length - 1;
+            
+            document.getElementById('lightboxImg').src = galleryImages[currentIndex].src;
+            document.getElementById('lightboxCaption').textContent = galleryImages[currentIndex].title;
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('lightboxModal');
+            if (event.target === modal) {
+                closeLightbox();
+            }
+        }
+    </script>
+</body>
+</html>

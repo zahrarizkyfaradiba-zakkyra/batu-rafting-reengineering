@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Daftar paket dan harga Batu Rafting: rafting, outbound, paintball, dan offroad lengkap dengan fasilitas.">
+    <title>Daftar Paket & Harga - BatuRafting</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="config.js"></script>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <a href="index.html" class="logo">
+            <img src="assets/logo.png" alt="BatuRafting Logo">
+        </a>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">Beranda</a></li>
+                <li><a href="tentang.html">Tentang Kami</a></li>
+                <li><a href="layanan.html">Layanan</a></li>
+                <li><a href="paket.html" style="color:#2563eb; font-weight:700;">Paket Harga</a></li>
+                <li><a href="galeri.html">Galeri</a></li>
+                <li><a href="artikel.html">Artikel</a></li>
+                <li><a href="cek-status.html">Cek Pesanan</a></li>
+                <li><a href="kontak.html">Kontak</a></li>
+            </ul>
+        </nav>
+        <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20reservasi" target="_blank" class="btn btn-blue-pill">Pesan Sekarang</a>
+    </header>
+
+    <main class="container">
+        <!-- HEADER PAGE -->
+        <div class="section-title" style="margin-top: 20px;">
+            <small>PILIHAN LENGKAP & TRANSPARAN</small>
+            <h2>Paket Petualangan & Promo BatuRafting</h2>
+            <p>Pilih kategori aktivitas outdoor yang kamu butuhkan dan dapatkan penawaran terbaik untuk rombongan maupun keluarga.</p>
+        </div>
+
+        <!-- TAB FILTER -->
+        <div class="package-tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'all')">Semua Paket</button>
+            <button class="tab-btn" onclick="switchTab(event, 'rafting')">Rafting</button>
+            <button class="tab-btn" onclick="switchTab(event, 'outbound')">Outbound</button>
+            <button class="tab-btn" onclick="switchTab(event, 'paintball')">Paintball</button>
+            <button class="tab-btn" onclick="switchTab(event, 'offroad')">Offroad</button>
+        </div>
+
+        <!-- GRID PAKET HARGA -->
+        <div class="package-grid" id="package-grid">
+
+            <!-- 1. Paket Batu Rafting -->
+            <div class="pkg-card" data-category="rafting">
+                <div class="pkg-tag promo">Special Promo</div>
+                <h3>Paket Batu Rafting</h3>
+                <div class="pkg-price">
+                    <span class="price-strike">Rp 215.000</span>
+                    <span class="price-main">Rp 200.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 4 pax | 🌊 Pengarungan 12 KM</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Makan Siang Prasmanan</li>
+                    <li>Rafting 12 KM (Grade 3)</li>
+                    <li>Safety set (Pelampung, Helm, Dayung)</li>
+                    <li>Guide & Rescue Team Berpengalaman</li>
+                    <li>Snack & Tea Break di Rest Area</li>
+                    <li>Shuttle Kendaraan Pengangkut</li>
+                </ul>
+               <a href="booking.html?package=Paket%20Batu%20Rafting&price=200000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 2. Paket Outbound Anak (BARU) -->
+            <div class="pkg-card" data-category="outbound">
+                <h3>Paket Outbound Anak</h3>
+                <div class="pkg-price">
+                    <span class="price-main">Rp 90.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 30 pax</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Instruktur & Fasilitator Berpengalaman</li>
+                    <li>Peralatan Standar Outbound</li>
+                    <li>Sound System</li>
+                    <li>Ice Breaking</li>
+                    <li>Fun Games, Team Building</li>
+                    <li>Free Tiket Masuk Tempat Wisata</li>
+                    <li>Makan Siang & Snack</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Outbound%20Anak&price=90000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 3. Paket Training Outbound -->
+            <div class="pkg-card" data-category="outbound">
+                <div class="pkg-tag promo">Special Promo</div>
+                <h3>Paket Training Outbound</h3>
+                <div class="pkg-price">
+                    <span class="price-strike">Rp 155.000</span>
+                    <span class="price-main">Rp 95.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 30 pax | 🎯 Team Building</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Instruktur & Fasilitator Berpengalaman</li>
+                    <li>Peralatan Standar Outbound & Sound System</li>
+                    <li>Ice Breaking, Fun Games, Team Building</li>
+                    <li>Problem Solving & Effective Communication</li>
+                    <li>Makan Siang 1x, Snack & Air Mineral</li>
+                    <li>Free Tiket Wisata Lokasi Outbound</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Training%20Outbound&price=95000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 4. Paket Training Motivasi (BARU) -->
+            <div class="pkg-card" data-category="outbound">
+                <h3>Paket Training Motivasi</h3>
+                <div class="pkg-price">
+                    <span class="price-main">Rp 100.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 30 pax</p>
+                <hr>
+                <h4>Muatan Materi:</h4>
+                <ul class="pkg-features">
+                    <li><strong>High Motivation, High Performance:</strong> Bagaimana membangun dan menemukan kunci-kunci motivasi dalam upaya peningkatan performance kerja</li>
+                    <li><strong>Teamwork and Synergy Capacity:</strong> Membangun keseimbangan leadership dan followership di kemas dalam bentuk <em>spiritual Quation</em></li>
+                    <li><strong>How to create Meaning at Work and Service:</strong> Membangun kesadaran akan hidup yang bermakna</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Training%20Motivasi&price=100000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 5. Paket Outbound Midle (BARU) -->
+            <div class="pkg-card" data-category="outbound">
+                <h3>Paket Outbound Midle</h3>
+                <div class="pkg-price">
+                    <span class="price-main">Rp 125.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 30 pax</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Instruktur & Fasilitator Berpengalaman</li>
+                    <li>Peralatan Standar Outbound</li>
+                    <li>Sound System</li>
+                    <li>Ice Breaking</li>
+                    <li>Fun Games</li>
+                    <li>Team Building</li>
+                    <li>Problem Solving</li>
+                    <li>Effective Communication</li>
+                    <li>Makan Siang Prasmanan</li>
+                    <li>Snack dan Air Mineral</li>
+                    <li>Free Tiket Wisata Lokasi Outbound</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Outbound%20Midle&price=125000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 6. Paket Outbound & Rafting (Combo) -->
+            <div class="pkg-card" data-category="outbound rafting">
+                <div class="pkg-tag popular">Terpopuler</div>
+                <h3>Paket Outbound & Rafting</h3>
+                <div class="pkg-price">
+                    <span class="price-strike">Rp 330.000</span>
+                    <span class="price-main">Rp 285.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 25 pax | ⚡ Paket Combo Komplit</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Instruktur Outbound, Guide & Rescue Rafting</li>
+                    <li>Peralatan Outbound & Safety Set Rafting 12 KM</li>
+                    <li>Ice Breaking, Fun Games & Team Building</li>
+                    <li>Free Tiket Masuk Lokasi Outbound</li>
+                    <li>Makan Siang Prasmanan & 2x Snack</li>
+                    <li>Shuttle Kendaraan Pengangkut</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Outbound%20%26%20Rafting&price=285000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 7. Paket Paintball -->
+            <div class="pkg-card" data-category="paintball">
+                <div class="pkg-tag promo">Special Promo</div>
+                <h3>Paket Paintball (War Games)</h3>
+                <div class="pkg-price">
+                    <span class="price-strike">Rp 150.000</span>
+                    <span class="price-main">Rp 135.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 10 pax | 🔫 50 Peluru/pax</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Senjata / Marker Semi Otomatis</li>
+                    <li>Peluru Gelatin 50 Butir per peserta</li>
+                    <li>Goggle (Kacamata Pelindung Wajah)</li>
+                    <li>Body Protector & Seragam Tempur</li>
+                    <li>Skenario Permainan & Wasit (Marshall)</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Paintball&price=135000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 8. Paket Fun Offroad -->
+            <div class="pkg-card" data-category="offroad">
+                <h3>Paket Fun Offroad</h3>
+                <div class="pkg-price">
+                    <span class="price-main">Rp 550.000 <span>/Jeep</span></span>
+                </div>
+                <p class="pkg-meta">🚘 Kapasitas 3 - 4 orang / Jeep</p>
+                <hr>
+                <h4>Fasilitas & Rute:</h4>
+                <ul class="pkg-features">
+                    <li>Rute: Hutan Pinus, Kebun Sayur, & Susur Sungai</li>
+                    <li>Meeting Point: Coban Talun / Basecamp</li>
+                    <li>Armada Jeep 4x4 + Driver + BBM</li>
+                    <li>Tiket Masuk Wahana Air</li>
+                    <li>Guide & Driver Berpengalaman</li>
+                </ul>
+               <a href="booking.html?package=Paket%20Fun%20Offroad&price=550000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+            <!-- 9. Paket Outbound & Offroad -->
+            <div class="pkg-card" data-category="outbound offroad">
+                <div class="pkg-tag popular">Free Dokumentasi</div>
+                <h3>Paket Outbound & Offroad</h3>
+                <div class="pkg-price">
+                    <span class="price-main">Rp 265.000 <span>/orang</span></span>
+                </div>
+                <p class="pkg-meta">👥 Min. 30 pax | 📸 Free Foto/Video</p>
+                <hr>
+                <h4>Fasilitas Termasuk:</h4>
+                <ul class="pkg-features">
+                    <li>Offroad Rute Panjang (Jeep + Driver + BBM)</li>
+                    <li>Guide, Instruktur Outbound & Sound System</li>
+                    <li>Tiket Masuk Coban Talun</li>
+                    <li>Makan Siang, Coffee Break & Snack</li>
+                    <li>BONUS FREE DOKUMENTASI FOTO</li>
+                </ul>
+                <a href="booking.html?package=Paket%20Outbound%20%26%20Offroad&price=265000" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>
+            </div>
+
+        </div>
+
+        <!-- INFO TAMBAHAN / CUSTOM PACKAGE -->
+        <div style="background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 16px; padding: 30px; margin-top: 50px; text-align: center;">
+            <h3 style="color: #0369a1; font-size: 1.3rem; margin-bottom: 8px;">Butuh Paket Custom Untuk Rombongan Besar?</h3>
+            <p style="color: #0284c7; font-size: 0.95rem; margin-bottom: 20px;">Kami melayani penyesuaian anggaran, fasilitas penginapan/villa, catering khusus, hingga susunan acara gathering perusahaan.</p>
+            <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20mau%20konsultasi%20paket%20custom%20rombongan" target="_blank" class="btn btn-blue-pill">💬 Diskusi via WhatsApp</a>
+        </div>
+    </main>
+
+    <!-- FLOATING WA BUTTON -->
+    <a href="https://wa.me/6285234613677?text=Halo%20BatuRafting,%20saya%20ingin%20mendapatkan%20penawaran%20harga" target="_blank" class="wa-floating">
+        🟢 Dapatkan Penawaran
+    </a>
+
+    <!-- SCRIPT FILTER TAB -->
+    <script>
+        function switchTab(event, category) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            if (event) {
+                event.currentTarget.classList.add('active');
+            } else {
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('onclick').includes(`'${category}'`)) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            const cards = document.querySelectorAll('.pkg-card');
+            cards.forEach(card => {
+                const cats = card.getAttribute('data-category').split(' ');
+                if (category === 'all' || cats.includes(category)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Otomatis jalankan filter jika ada parameter ?category=xxx di URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            if (category) {
+                switchTab(null, category);
+            }
+        });
+    </script>
+
+    <script>
+        // Memuat paket dari API; jika gagal, kartu statis di atas tetap dipakai sebagai cadangan.
+        async function loadPackagesFromApi() {
+            try {
+                const res = await fetch(API_URL + '/packages');
+                const result = await res.json();
+                if (!result.success || !result.data || !result.data.length) return;
+
+                document.getElementById('package-grid').innerHTML = result.data.map(function (p) {
+                    const promo = p.price_strike && Number(p.price_strike) > Number(p.price_per_pax);
+                    const features = String(p.features || '').split(',').map(function (f) { return f.trim(); }).filter(Boolean);
+                    return '<div class="pkg-card" data-category="' + esc(p.category) + '">' +
+                        (promo ? '<div class="pkg-tag promo">Special Promo</div>' : '') +
+                        '<h3>' + esc(p.name) + '</h3>' +
+                        '<div class="pkg-price">' +
+                            (promo ? '<span class="price-strike">' + rupiah(p.price_strike) + '</span>' : '') +
+                            '<span class="price-main">' + rupiah(p.price_per_pax) + ' <span>/orang</span></span>' +
+                        '</div>' +
+                        '<p class="pkg-meta">&#128101; Min. ' + esc(p.min_pax) + ' pax</p><hr>' +
+                        '<h4>Fasilitas Termasuk:</h4><ul class="pkg-features">' +
+                            features.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') +
+                        '</ul>' +
+                        '<a href="booking.html?id=' + encodeURIComponent(p.id) + '" class="btn btn-primary btn-block">Pesan Paket Ini &rarr;</a>' +
+                    '</div>';
+                }).join('');
+
+                // terapkan kembali filter kategori yang sedang aktif
+                const active = document.querySelector('.tab-btn.active');
+                const m = active && (active.getAttribute('onclick') || '').match(/'(\w+)'\)/);
+                if (m && m[1] !== 'all') {
+                    document.querySelectorAll('.pkg-card').forEach(function (card) {
+                        card.style.display = card.getAttribute('data-category').split(' ').indexOf(m[1]) >= 0 ? 'flex' : 'none';
+                    });
+                }
+            } catch (err) { /* tetap tampilkan data statis */ }
+        }
+        loadPackagesFromApi();
+    </script>
+
+</body>
+</html>
