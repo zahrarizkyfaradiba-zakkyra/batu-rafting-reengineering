@@ -1,11 +1,15 @@
 // Tes UI end-to-end: menjalankan server demo (database memori) lalu menguji halaman dengan jsdom.
-const { JSDOM } = require('jsdom');
+const { JSDOM, ResourceLoader } = require('jsdom');
 const { spawn } = require('child_process');
 const path = require('path');
 const PORT = 5055;
 const BASE = 'http://localhost:' + PORT;
 const server = spawn(process.execPath, [path.join(__dirname, 'dev-mock-server.js')], { env: { ...process.env, PORT: String(PORT) }, stdio: 'ignore' });
 process.on('exit', () => server.kill());
+// Hanya muat sumber daya dari server lokal; iframe/skrip eksternal (mis. Google Maps) dilewati agar tes deterministik dan tanpa internet.
+class LocalOnlyLoader extends ResourceLoader {
+  fetch(url, options) { return url.startsWith(BASE) ? super.fetch(url, options) : null; }
+}
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let failures = 0;
 let total = 0;
@@ -13,7 +17,7 @@ const check = (name, cond, extra) => { total++; console.log((cond ? 'PASS ' : 'F
 
 async function open(path, opts = {}) {
   const dom = await JSDOM.fromURL(BASE + path, {
-    runScripts: 'dangerously', resources: 'usable', pretendToBeVisual: true,
+    runScripts: 'dangerously', resources: new LocalOnlyLoader(), pretendToBeVisual: true,
     beforeParse(window) {
       window.fetch = (u, o) => fetch(new URL(String(u).replace('http://localhost:5000', BASE), BASE), o);
       window.alert = (m) => { (window.__alerts = window.__alerts || []).push(m); };
